@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Result Analysis</title>
+    <style>
+        /* Container and Form Styling */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .upload-container {
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        label {
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 15px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #1c5d99;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+
+        /* Message styling */
+        .messages {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .alert {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        /* Additional styling for table on smaller screens */
+        @media screen and (max-width: 600px) {
+            table, th, td {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Display success and error messages (messages framework) -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Upload CSV File Section -->
+        <div class="upload-container">
+            <h2>Upload CSV File</h2>
+            <form method="post" enctype="multipart/form-data"> 
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="hidden" name="next" value="{% url 'csv_upload' %}"> <!-- Redirect to csv_upload -->
+                <label for="csv_file">Choose CSV File to Upload</label>
+                <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                <br>
+                <button type="submit">Upload and Analyze</button>
+            </form>
+        </div>
+
+        <!-- Display Uploaded Data Section -->
+        <h2>Uploaded Data</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Register No</th>
+                    <th>Student Name</th>
+                    <th>Branch</th>
+                    <th>Semester</th>
+                    <th>Course</th>
+                    <th>Exam Type</th>
+                    <th>Attendance</th>
+                    <th>Withheld</th>
+                    <th>IMark</th>
+                    <th>Grade</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if uploaded_data %}
+                    {% for row in uploaded_data %}
+                    <tr>
+                        <td>{{ row.Register_No }}</td>
+                        <td>{{ row.Student_Name }}</td>
+                        <td>{{ row.Branch }}</td>
+                        <td>{{ row.Semester }}</td>
+                        <td>{{ row.Course }}</td>
+                        <td>{{ row.Exam_Type }}</td>
+                        <td>{{ row.Attendance }}</td>
+                        <td>{{ row.Withheld }}</td>
+                        <td>{{ row.IMark }}</td>
+                        <td>{{ row.Grade }}</td>
+                        <td>{{ row.Result }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="11">No data available. Please upload a CSV file.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
