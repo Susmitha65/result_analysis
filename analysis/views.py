@@ -27,17 +27,18 @@ def csv_upload(request):
                 with open(csv_file.name, 'r') as file:
                     # Read the first line (header) using ';' as the delimiter
                     header_line = file.readline().strip()
-                    header_line =h  
+                    #header_line =h  
                     headers = header_line.split(';')
                     #print(headers)
                     # Step 2: Read the rest of the file with ',' as the delimiter
                     data = pd.read_csv(file, delimiter=',', names=headers, skiprows=1)
-                #print(data)
+                    data.columns = data.columns.str.replace('"', '').str.strip()
+                print(data)
                 uploaded_data=[]
                 for index,row in data.iterrows():
                     print("row ",row['Semester'])
                     #break
-                    # Append row data to uploaded_data, matching exact CSV header names
+                    #Append row data to uploaded_data, matching exact CSV header names
                     uploaded_data.append({
                         'Register_No': row['Register No'],  # Match exact header
                         'Student_Name': row['Student Name'],
