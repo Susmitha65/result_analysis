@@ -122,13 +122,18 @@
         <!-- Upload CSV File Section -->
         <div class="upload-container">
             <h2>Upload CSV File</h2>
-            <form method="post" enctype="multipart/form-data"> 
+            <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{ form.as_p }}
                 <br>
                 <button type="submit">Upload and Analyze</button>
             </form>
         </div>
+
+        {% if excel_file_path %}
+  <a href="{% url 'download_excel' %}" class="btn btn-primary">Download Excel</a>
+{% endif %}
+
 
         <!-- Display Uploaded Data Section -->
         <h2>Uploaded Data</h2>
