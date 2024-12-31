@@ -3,180 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSV Result Analysis</title>
+    <title>Result Analysis</title>
+    <!-- AdminLTE CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* Container and Form Styling */
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: Arial, sans-serif;
+        .card {
+            margin: 20px;
         }
-
-        .upload-container {
-            margin-bottom: 30px;
-        }
-
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        label {
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        input[type="file"] {
-            margin-bottom: 15px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: #2980b9;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #1c5d99;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        th {
-            background-color: #f4f4f4;
-            font-weight: bold;
-        }
-
-        /* Message styling */
         .messages {
             margin-bottom: 20px;
-            text-align: center;
         }
-
         .alert {
             padding: 10px;
             margin-bottom: 15px;
             border-radius: 4px;
             font-size: 14px;
         }
-
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-
-        /* Additional styling for table on smaller screens */
-        @media screen and (max-width: 600px) {
-            table, th, td {
-                font-size: 12px;
-            }
+        .table th, .table td {
+            text-align: center;
+            vertical-align: middle;
         }
     </style>
 </head>
-<body>
-    <div class="container">
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+            <li class="nav-item d-none d-sm-inline-block">
+                <a href="#" class="nav-link">Home</a>
+            </li>
+        </ul>
+    </nav>
 
-        <!-- Display success and error messages (messages framework) -->
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="alert {{ message.tags }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <!-- Upload CSV File Section -->
-        <div class="upload-container">
-            <h2>Upload CSV File</h2>
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                {{ form.as_p }}
-                <br>
-                <button type="submit">Upload and Analyze</button>
-            </form>
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a href="#" class="brand-link">
+            <span class="brand-text font-weight-light">Analysis</span>
+        </a>
+        <div class="sidebar">
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active">
+                            <i class="nav-icon fas fa-upload"></i>
+                            <p>Upload CSV</p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fas fa-chart-bar"></i>
+                            <p>Statistics</p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
         </div>
+    </aside>
 
-        {% if excel_file_path %}
-  <a href="{% url 'download_excel' %}" class="btn btn-primary">Download Excel</a>
-{% endif %}
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Result Analysis</h1>
+                    </div>
+                </div>
+            </div>
+        </section>
 
+        <section class="content">
+            <div class="container-fluid">
 
-        <!-- Display Uploaded Data Section -->
-        <h2>Uploaded Data</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Register No</th>
-                    <th>Student Name</th>
-                    <th>Branch</th>
-                    <th>Semester</th>
-                    <th>Course</th>
-                    <th>Exam Type</th>
-                    <th>Attendance</th>
-                    <th>Withheld</th>
-                    <th>IMark</th>
-                    <th>Grade</th>
-                    <th>Result</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if uploaded_data %}
-                    {% for row in uploaded_data %}
-                    <tr>
-                        <td>{{ row.Register_No }}</td>
-                        <td>{{ row.Student_Name }}</td>
-                        <td>{{ row.Branch }}</td>
-                        <td>{{ row.Semester }}</td>
-                        <td>{{ row.Course }}</td>
-                        <td>{{ row.Exam_Type }}</td>
-                        <td>{{ row.Attendance }}</td>
-                        <td>{{ row.Withheld }}</td>
-                        <td>{{ row.IMark }}</td>
-                        <td>{{ row.Grade }}</td>
-                        <td>{{ row.Result }}</td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="11">No data available. Please upload a CSV file.</td>
-                    </tr>
+                <!-- Messages Section -->
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <div class="alert {{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
                 {% endif %}
-            </tbody>
-        </table>
+
+                <!-- Statistics Section -->
+                <div class="row">
+                    <div class="col-lg-4 col-6">
+                        <div class="small-box bg-success">
+                            <div class="inner">
+                                <h3>{{ total_passed }}</h3>
+                                <p>Total Passed</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-6">
+                        <div class="small-box bg-danger">
+                            <div class="inner">
+                                <h3>{{ total_failed }}</h3>
+                                <p>Total Failed</p>
+                            </div>
+                            <div class="icon">
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Upload CSV File</h3>
+                        <a href="/path/to/template.csv" class="btn btn-secondary float-right">
+                            <i class="fas fa-download"></i> Download Template
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <button type="submit" class="btn btn-primary"><i class="fas fa-upload"></i> Upload and Analyze</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Uploaded Data Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Uploaded Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Register No</th>
+                                    <th>Student Name</th>
+                                    <th>Branch</th>
+                                    <th>Semester</th>
+                                    <th>Course</th>
+                                    <th>Exam Type</th>
+                                    <th>Attendance</th>
+                                    <th>Withheld</th>
+                                    <th>IMark</th>
+                                    <th>Grade</th>
+                                    <th>Result</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if uploaded_data %}
+                                    {% for row in uploaded_data %}
+                                        <tr>
+                                            <td>{{ row.Register_No|default:"N/A" }}</td>
+                                            <td>{{ row.Student_Name|default:"N/A" }}</td>
+                                            <td>{{ row.Branch|default:"N/A" }}</td>
+                                            <td>{{ row.Semester|default:"N/A" }}</td>
+                                            <td>{{ row.Course|default:"N/A" }}</td>
+                                            <td>{{ row.Exam_Type|default:"N/A" }}</td>
+                                            <td>{{ row.Attendance|default:"N/A" }}</td>
+                                            <td>{{ row.Withheld|default:"N/A" }}</td>
+                                            <td>{{ row.IMark|default:"N/A" }}</td>
+                                            <td>{{ row.Grade|default:"N/A" }}</td>
+                                            <td>{{ row.Result|default:"N/A" }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="11">No data available. Please upload a CSV file.</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </section>
     </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <strong>&copy; Result Analysis.</strong> All rights reserved.
+        <div class="float-right d-none d-sm-inline">
+            <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Service</a> | <a href="/contact">Contact Us</a>
+        </div>
+    </footer>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
